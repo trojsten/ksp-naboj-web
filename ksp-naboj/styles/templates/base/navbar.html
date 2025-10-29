@@ -1,0 +1,29 @@
+{# main navbar #}
+
+<header class="bg-primary text-primary-content py-4" data-controller="toggle" data-toggle-open-class="flex" data-toggle-closed-class="hidden">
+  <div class="max-w-6xl mx-auto px-5 flex items-center gap-6 flex-col sm:flex-row">
+    <div class="flex items-center justify-between w-full sm:w-auto">
+      <a href="/" class="text-lg hover:underline font-bold inline-flex items-center">
+        Scaffold
+      </a>
+
+      <button class="sm:hidden p-2 -m-2 text-gray-600 cursor-pointer" data-action="click->toggle#toggle">
+        <span class="icon-[mdi--menu] size-6"></span>
+      </button>
+    </div>
+
+    <nav class="sm:flex items-center gap-3 sm:gap-6 flex-1 flex-col sm:flex-row hidden" data-toggle-target="element">
+      <a href="#" class="hover:underline">Link</a>
+
+      {% if user.is_authenticated %}
+        <span class="sm:ml-auto">{{ user.get_full_name }}</span>
+        <form action="{% url 'oidc_logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="hover:underline cursor-pointer hover:text-error">Odhlásiť sa</button>
+        </form>
+      {% else %}
+        <a class="sm:ml-auto hover:underline" href="{% url 'oidc_authentication_init' %}">Prihlásiť sa</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>

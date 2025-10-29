@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% load static version %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}- Scaffold{% endblock %}</title>
+    {% block head %}{% endblock %}
+
+    <link href="{% static 'app.css' %}?v={% app_version %}" rel="stylesheet">
+    <script src="{% static 'app.js' %}?v={% app_version %}" defer></script>
+  </head>
+  <body class="text-base-content bg-base-100" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+    {% block body %}
+      {% include "base/navbar.html" %}
+
+      {% block outer_container %}
+      <div class="mx-auto max-w-6xl w-full p-5 pb-12">
+        {% block container %}{% endblock %}
+      </div>
+      {% endblock outer_container %}
+    {% endblock body %}
+  </body>
+</html>

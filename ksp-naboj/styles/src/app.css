@@ -1,0 +1,127 @@
+@import "tailwindcss";
+@plugin "@iconify/tailwind4";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --color-base-100: var(--color-white);
+  --color-base-200: var(--color-gray-100);
+  --color-base-300: var(--color-gray-200);
+  --color-base-content: var(--color-gray-800);
+
+  --color-neutral: var(--color-gray-900);
+  --color-neutral-hover: color-mix(in oklab, var(--color-neutral), #fff 8%);
+  --color-neutral-content: var(--color-gray-100);
+
+  --color-success: var(--color-green-600);
+  --color-success-hover: color-mix(in oklab, var(--color-success), #000 8%);
+  --color-success-content: var(--color-green-950);
+
+  --color-error: var(--color-red-600);
+  --color-error-hover: color-mix(in oklab, var(--color-error), #000 8%);
+  --color-error-content: var(--color-red-100);
+
+  --color-warning: var(--color-amber-500);
+  --color-warning-hover: color-mix(in oklab, var(--color-warning), #000 8%);
+  --color-warning-content: var(--color-amber-950);
+
+  --color-info: var(--color-cyan-500);
+  --color-info-hover: color-mix(in oklab, var(--color-info), #000 8%);
+  --color-info-content: var(--color-cyan-950);
+
+  --color-primary: #1077C1;
+  --color-primary-hover: color-mix(in oklab, var(--color-primary), #000 8%);
+  --color-primary-content: var(--color-white);
+}
+
+.link {
+  @apply text-primary underline hover:text-primary-hover;
+}
+
+.btn {
+  @apply px-3 py-1.5 rounded font-bold inline-flex gap-1 items-center cursor-pointer;
+}
+
+.btn-error {
+  @apply bg-error hover:bg-error-hover text-error-content;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary-hover text-primary-content;
+}
+
+.btn-info {
+  @apply bg-info hover:bg-info-hover text-info-content;
+}
+
+.btn-warning {
+  @apply bg-warning hover:bg-warning-hover text-warning-content;
+}
+
+.btn-success {
+  @apply bg-success hover:bg-success-hover text-success-content;
+}
+
+.btn-neutral {
+  @apply bg-neutral hover:bg-neutral-hover text-neutral-content;
+}
+
+.input {
+  @apply w-full rounded px-3 py-1.5 inline-flex;
+}
+
+.checkbox {
+  @apply rounded;
+}
+
+.input:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.simple-table {
+  @apply min-w-full divide-y divide-base-300;
+}
+
+.simple-table thead {
+  @apply text-left
+}
+
+.simple-table th {
+  @apply whitespace-nowrap pt-0 p-3 text-sm font-semibold;
+}
+
+.simple-table tbody {
+  @apply divide-y divide-base-300;
+}
+
+.simple-table tr {
+  @apply text-sm;
+}
+
+.simple-table td {
+  @apply whitespace-nowrap p-3;
+}
+
+.tooltip {
+  @apply relative;
+}
+
+.tooltip:before {
+  content: attr(data-tip);
+  @apply absolute z-10 text-sm rounded-sm px-2 py-1 text-center bg-neutral text-neutral-content opacity-0 transition-opacity top-0 left-1/2;
+  transform: translateX(-50%) translateY(calc(-100% - var(--spacing) * 2));
+}
+
+.tooltip:after {
+  content: "";
+  @apply absolute z-10 top-0 left-1/2 opacity-0 transition-opacity;
+
+  transform: translateX(-50%) translateY(calc(var(--spacing) * -2));
+
+  border: calc(var(--spacing) * 1) solid transparent;
+  border-color: var(--color-neutral) transparent transparent transparent;
+}
+
+.tooltip:hover:before, .tooltip:hover:after {
+  @apply opacity-100;
+}
