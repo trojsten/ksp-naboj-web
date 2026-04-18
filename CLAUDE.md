@@ -149,17 +149,20 @@ mkdir naboj/apps/competition
 - Name, school, members
 - Competition category (Junior/Senior)
 - Current problems and progress tracking
+- ✅ Progressive unlock: Solving easy problems unlocks hard versions + next locked easy problems (prevents wasted unlocks)
 
 ### Problem
-- Title, description, difficulty
-- Sample input/output
+- Title, description (markdown)
+- Difficulty (easy/hard)
 - Unlock order and dependencies
-- Test cases (for judge integration)
+- Judge task (unique globally)
+- Optional language restrictions
 
 ### Submission
 - Team, problem, code, language
 - Result status and timestamp
-- Execution details (when integrated with judge)
+- Execution time tracking
+- Error messages for failed submissions
 
 ### User
 - Team member information

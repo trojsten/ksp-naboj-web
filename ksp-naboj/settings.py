@@ -25,6 +25,10 @@ INSTALLED_APPS = [
     # 1st party
     "ksp-naboj.users",
     "ksp-naboj.styles",
+    "ksp-naboj.competition",
+    "ksp-naboj.team",
+    "ksp-naboj.problem",
+    "ksp-naboj.submission",
     # 3rd party
     "django_probes",
     "debug_toolbar",
@@ -69,7 +73,7 @@ DATABASES = {
     "default": env.dj_db_url("DATABASE_URL", default="sqlite://:memory:"),
 }
 
-AUTH_USER_MODEL = "ksp-naboj_users.User"
+AUTH_USER_MODEL = "ksp_naboj_users.User"
 AUTH_PASSWORD_VALIDATORS = []
 AUTHENTICATION_BACKENDS = [
     "ksp-naboj.users.auth.TrojstenID",

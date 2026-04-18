@@ -1,8 +1,10 @@
 from django import template
-
-from ksp-naboj import VERSION
+import importlib
 
 register = template.Library()
+
+ksp_naboj = importlib.import_module("ksp-naboj")
+VERSION = ksp_naboj.VERSION
 
 
 @register.simple_tag
