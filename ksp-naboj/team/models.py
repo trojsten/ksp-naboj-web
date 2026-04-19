@@ -22,3 +22,4 @@ class TeamProgress(models.Model):
     unlocked_problems = models.ManyToManyField('ksp_naboj_problem.Problem', related_name='unlocked_by')
     last_unlock_at = models.DateTimeField(null=True, blank=True)
     score = models.IntegerField(default=0)
+    highest_unlocked_order = models.PositiveIntegerField(default=0)
