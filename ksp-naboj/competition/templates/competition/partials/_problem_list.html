@@ -1,0 +1,57 @@
+<div class="p-3">
+  <h2 class="text-sm font-semibold text-base-content/60 uppercase tracking-wider mb-3">Problems</h2>
+
+  {% for group in problem_groups %}
+    <div class="mb-3">
+      <div class="text-xs font-semibold text-base-content/50 px-2 py-1">
+        {{ group.unlock_order }}. {{ group.title }}
+      </div>
+
+      {% if group.easy %}
+        <button
+          type="button"
+          class="problem-item w-full text-left px-2 py-1.5 rounded text-sm flex items-center gap-2 transition-colors
+            {% if group.easy.solved %}text-success
+            {% elif not group.easy.unlocked %}text-base-content/30 cursor-not-allowed
+            {% else %}hover:bg-base-200 cursor-pointer{% endif %}"
+          data-problem-id="{{ group.easy.problem.id }}"
+          {% if not group.easy.unlocked %}disabled{% endif %}
+          data-action="click->problem-list#select"
+        >
+          {% if group.easy.solved %}
+            <span class="icon-[mdi--check-circle] size-4 text-success"></span>
+          {% elif not group.easy.unlocked %}
+            <span class="icon-[mdi--lock] size-4"></span>
+          {% else %}
+            <span class="size-4"></span>
+          {% endif %}
+          <span class="text-xs rounded px-1.5 py-0.5 bg-success/10 text-success font-medium">Easy</span>
+        </button>
+      {% endif %}
+
+      {% if group.hard %}
+        <button
+          type="button"
+          class="problem-item w-full text-left px-2 py-1.5 rounded text-sm flex items-center gap-2 transition-colors
+            {% if group.hard.solved %}text-success
+            {% elif not group.hard.unlocked %}text-base-content/30 cursor-not-allowed
+            {% else %}hover:bg-base-200 cursor-pointer{% endif %}"
+          data-problem-id="{{ group.hard.problem.id }}"
+          {% if not group.hard.unlocked %}disabled{% endif %}
+          data-action="click->problem-list#select"
+        >
+          {% if group.hard.solved %}
+            <span class="icon-[mdi--check-circle] size-4 text-success"></span>
+          {% elif not group.hard.unlocked %}
+            <span class="icon-[mdi--lock] size-4"></span>
+          {% else %}
+            <span class="size-4"></span>
+          {% endif %}
+          <span class="text-xs rounded px-1.5 py-0.5 bg-error/10 text-error font-medium">Hard</span>
+        </button>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p class="text-sm text-base-content/40 px-2">No problems available yet.</p>
+  {% endfor %}
+</div>

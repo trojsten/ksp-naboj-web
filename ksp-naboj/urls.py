@@ -8,6 +8,7 @@ from django.urls import path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("ksp-naboj.users.urls")),
+    path("competition/", include("ksp-naboj.competition.urls")),
 ] + debug_toolbar_urls()
 
 if settings.DEBUG:
