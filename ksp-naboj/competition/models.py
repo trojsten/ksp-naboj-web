@@ -5,6 +5,8 @@ class Competition(models.Model):
     year = models.IntegerField(unique=True)
     judge_namespace = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
+    start_at = models.DateTimeField(null=True, blank=True)
+    end_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

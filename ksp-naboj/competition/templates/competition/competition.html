@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Náboj {{ competition.year }}{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'bundle.css' %}" rel="stylesheet">
+{% endblock %}
 
 {% block outer_container %}
 <script type="application/json" id="problems-data">{{ problems_json|safe }}</script>
@@ -14,9 +19,7 @@
   </div>
 
   <div class="col-span-7 overflow-hidden flex flex-col">
-    <div class="flex-1 flex items-center justify-center">
-      <p class="text-sm text-base-content/40">Code editor will appear here.</p>
-    </div>
+    {% include "competition/partials/_editor_panel.html" %}
   </div>
 </div>
 {% endblock %}

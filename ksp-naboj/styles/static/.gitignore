@@ -1,2 +1,4 @@
 /app.css
 /app.js
+/editor.worker.js
+/monaco.editor.css

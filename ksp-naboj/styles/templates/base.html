@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% block title %}- Scaffold{% endblock %}</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
     {% block head %}{% endblock %}
 
     <link href="{% static 'app.css' %}?v={% app_version %}" rel="stylesheet">
-    <script src="{% static 'app.js' %}?v={% app_version %}" defer></script>
+    {% block extra_css %}{% endblock %}
+    <script src="{% static 'bundle.js' %}?v={% app_version %}" defer></script>
   </head>
   <body class="text-base-content bg-base-100" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
     {% block body %}

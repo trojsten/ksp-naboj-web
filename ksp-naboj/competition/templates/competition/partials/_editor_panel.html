@@ -1,0 +1,24 @@
+{% load static %}
+
+<div class="flex flex-col h-full" data-controller="monaco-editor" data-monaco-editor-worker-url-value="{% static 'editor.worker.js' %}">
+  <div data-monaco-editor-target="placeholder" class="flex-1 flex items-center justify-center">
+    <p class="text-sm text-base-content/40">Code editor will appear here.</p>
+  </div>
+  <div data-monaco-editor-target="container" class="flex-1 hidden w-full"></div>
+</div>
+
+<div class="border-t border-base-300 px-3 py-2 flex flex-col gap-2"
+     data-controller="submission"
+     data-submission-team-id-value="{{ team.id }}">
+  <div data-submission-target="feedback" class="hidden">
+    <span data-submission-target="result"></span>
+  </div>
+  <div class="flex items-center justify-between">
+    <span class="text-xs text-base-content/50" id="current-language">Python</span>
+    <button data-submission-target="button"
+            data-action="click->submission#submit"
+            class="btn btn-primary text-sm">
+      Submit
+    </button>
+  </div>
+</div>
