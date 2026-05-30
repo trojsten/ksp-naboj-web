@@ -4,8 +4,19 @@ from collections import OrderedDict
 Problem = importlib.import_module("ksp-naboj.problem.models").Problem
 Submission = importlib.import_module("ksp-naboj.submission.models").Submission
 
+# Short labels for submission statuses shown in the problem list
+STATUS_LABELS = {
+    "accepted": "OK",
+    "rejected": "WA",
+    "runtime_error": "RE",
+    "compilation_error": "CE",
+    "time_limit_exceeded": "TLE",
+    "memory_limit_exceeded": "MLE",
+    "pending": "...",
+}
 
-def get_problem_groups(competition, team):
+
+def get_problem_groups(competition, team, activities=None):
     progress = team.teamprogress if hasattr(team, "teamprogress") else None
     max_order = progress.highest_unlocked_order if progress else 0
 
@@ -27,6 +38,26 @@ def get_problem_groups(competition, team):
         )
     )
 
+    # Get the LAST submission per problem for this team
+    last_submissions = {}
+    for sub in (
+        Submission.objects.filter(team=team)
+        .order_by("-submitted_at")
+        .values("problem_id", "status")
+    ):
+        # First seen per problem_id wins (most recent due to ordering)
+        if sub["problem_id"] not in last_submissions:
+            last_submissions[sub["problem_id"]] = sub["status"]
+
+    # Build activity map: problem_id -> list of {color, color_index}
+    activity_map = {}
+    if activities:
+        for act in activities:
+            if act.current_problem_id:
+                activity_map.setdefault(act.current_problem_id, []).append(
+                    {"color": act.color, "index": act.color_index}
+                )
+
     groups = OrderedDict()
     for problem in problems:
         key = (problem.unlock_order, problem.title)
@@ -39,10 +70,15 @@ def get_problem_groups(competition, team):
             }
         is_unlocked = problem.id in unlocked_ids
         is_solved = problem.id in solved_ids
+
+        last_status = last_submissions.get(problem.id)
         entry = {
             "problem": problem,
             "unlocked": is_unlocked,
             "solved": is_solved,
+            "last_status": STATUS_LABELS.get(last_status, "") if last_status else "",
+            "last_status_raw": last_status or "",
+            "teammates": activity_map.get(problem.id, []),
         }
         if problem.difficulty == Problem.EASY:
             groups[key]["easy"] = entry

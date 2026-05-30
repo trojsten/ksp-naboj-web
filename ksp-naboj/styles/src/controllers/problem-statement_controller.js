@@ -7,12 +7,21 @@ export default class extends Controller {
     connect() {
         const dataEl = document.getElementById("problems-data")
         this.problems = dataEl ? JSON.parse(dataEl.textContent) : {}
+
         this._boundOnSelect = this.onSelect.bind(this)
         window.addEventListener("problem:select", this._boundOnSelect)
+
+        // Re-parse problems data when htmx swaps in new data (OOB swap)
+        this._boundOnSwap = () => {
+            const el = document.getElementById("problems-data")
+            if (el) this.problems = JSON.parse(el.textContent)
+        }
+        document.body.addEventListener("htmx:oobAfterSwap", this._boundOnSwap)
     }
 
     disconnect() {
         window.removeEventListener("problem:select", this._boundOnSelect)
+        document.body.removeEventListener("htmx:oobAfterSwap", this._boundOnSwap)
     }
 
     onSelect(event) {

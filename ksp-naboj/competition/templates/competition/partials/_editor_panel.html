@@ -1,6 +1,9 @@
 {% load static %}
 
-<div class="flex flex-col h-full" data-controller="monaco-editor" data-monaco-editor-worker-url-value="{% static 'editor.worker.js' %}">
+<div class="flex flex-col h-full"
+     data-controller="monaco-editor"
+     data-monaco-editor-worker-url-value="{% static 'editor.worker.js' %}"
+     data-monaco-editor-team-id-value="{{ team.id }}">
   <div data-monaco-editor-target="placeholder" class="flex-1 flex items-center justify-center">
     <p class="text-sm text-base-content/40">Code editor will appear here.</p>
   </div>
@@ -8,8 +11,7 @@
 </div>
 
 <div class="border-t border-base-300 px-3 py-2 flex flex-col gap-2"
-     data-controller="submission"
-     data-submission-team-id-value="{{ team.id }}">
+     data-controller="submission">
   <div data-submission-target="feedback" class="hidden">
     <span data-submission-target="result"></span>
   </div>

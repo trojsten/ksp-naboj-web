@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Team Login{% endblock %}
+
+{% block container %}
+<div class="max-w-sm mx-auto mt-16">
+  <h1 class="text-2xl font-bold mb-6 text-center">Team Login</h1>
+
+  {% if error %}
+    <div class="bg-error/10 text-error border border-error/30 rounded px-3 py-2 mb-4 text-sm">
+      {{ error }}
+    </div>
+  {% endif %}
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <label for="team_id" class="block text-sm font-medium mb-1">Team ID</label>
+      <input type="text" name="team_id" id="team_id"
+             class="input" placeholder="e.g. 42" required>
+    </div>
+    <div>
+      <label for="login_code" class="block text-sm font-medium mb-1">Login Code</label>
+      <input type="text" name="login_code" id="login_code"
+             class="input font-mono uppercase tracking-widest"
+             placeholder="e.g. A3F1B2C8" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-full">Enter Competition</button>
+  </form>
+</div>
+{% endblock %}

@@ -2,9 +2,6 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
     static targets = ["button", "feedback", "result"]
-    static values = {
-        teamId: String,
-    }
 
     feedbackTimeout = null
 
@@ -27,11 +24,14 @@ export default class extends Controller {
         event.preventDefault()
         if (!this.currentProblemId) return
 
-        const editorElement = document.querySelector("[data-controller*='monaco-editor']")
-        const editorController = this.application.getControllerForElementAndIdentifier(
-            editorElement,
-            "monaco-editor"
+        const editorElement = document.querySelector(
+            "[data-controller*='monaco-editor']"
         )
+        const editorController =
+            this.application.getControllerForElementAndIdentifier(
+                editorElement,
+                "monaco-editor"
+            )
         if (!editorController) return
 
         const code = editorController.getCode()
@@ -50,15 +50,14 @@ export default class extends Controller {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRFToken": document.querySelector(
-                        'meta[name="csrf-token"]'
-                    )?.content || document.querySelector('[name="csrfmiddlewaretoken"]')?.value,
+                    "X-CSRFToken":
+                        document.querySelector('meta[name="csrf-token"]')
+                            ?.content || "",
                 },
                 body: JSON.stringify({
                     problem_id: this.currentProblemId,
                     code,
                     language,
-                    team_id: this.teamIdValue,
                 }),
             })
 
@@ -70,11 +69,6 @@ export default class extends Controller {
                         "success",
                         `Accepted! (${result.execution_time}s)`
                     )
-                    window.dispatchEvent(
-                        new CustomEvent("submission:accepted", {
-                            detail: { problemId: this.currentProblemId },
-                        })
-                    )
                 } else {
                     this.showFeedback(
                         "error",
@@ -82,9 +76,12 @@ export default class extends Controller {
                     )
                 }
             } else {
-                this.showFeedback("error", result.error || "Submission failed")
+                this.showFeedback(
+                    "error",
+                    result.error || "Submission failed"
+                )
             }
-        } catch (err) {
+        } catch {
             this.showFeedback("error", "Network error. Please try again.")
         } finally {
             this.buttonTarget.disabled = false

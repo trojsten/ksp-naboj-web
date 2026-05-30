@@ -15,6 +15,34 @@
 
 ---
 
+## Implementation Checklist
+
+- [x] 1.1 Fix `team/apps.py` signal registration
+- [x] 2.1 Add `login_code` field to Team model + migration
+- [x] 2.2 Create `team/middleware.py` with `get_team_from_session()`
+- [x] 2.3 Create `team/views.py` with login/logout views
+- [x] 2.4 Create `team/templates/team/login.html`
+- [x] 2.5 Wire team URLs (`team/urls.py` + root `urls.py`)
+- [x] 2.6 Update `CompetitionDetailView` to use session auth
+- [x] 2.7 Update `seed_testdata.py` to print login code
+- [x] 3.1 Rewrite `submission/views.py` (remove csrf_exempt, session auth, validation)
+- [x] 3.2 Add `select_for_update` + transactions to `team/services.py`
+- [x] 4.1 Rewrite `monaco-editor_controller.js` with localStorage persistence
+- [x] 4.2 Update `_editor_panel.html` (pass teamId to editor)
+- [x] 5.1 Create `_submission_feed.html` partial template
+- [x] 5.2 Add `SubmissionFeedView` to `competition/views.py`
+- [x] 5.3 Rewrite `submission_controller.js` (dispatch htmx events, remove teamId)
+- [x] 6.1 Add `ProblemListPartialView` with OOB JSON swap
+- [x] 6.2 Wire new URLs in `competition/urls.py`
+- [x] 6.3 Rewrite `competition.html` with htmx polling + feed panel
+- [x] 6.4 Update `problem-statement_controller.js` to re-parse JSON on htmx swap
+- [x] 6.5 Update `monaco-editor_controller.js` to re-parse JSON on htmx swap
+- [x] 7.0 Run `pnpm build` and verify no JS build errors
+- [x] 7.1 Run `python manage.py check` and verify no Django errors
+- [x] 7.2 Run tests: 45/47 pass (2 pre-existing failures, 0 regressions)
+
+---
+
 ## 1. Fix Signal Registration
 
 **Problem:** `team/apps.py` has an empty `ready()` so `create_team_progress` and `unlock_problem_for_teams` signals never fire in production. Tests pass by accident because the test runner imports the module.
