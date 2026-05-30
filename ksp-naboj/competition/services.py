@@ -15,12 +15,16 @@ def get_problem_groups(competition, team):
         ).order_by("unlock_order", "difficulty")
     )
 
-    unlocked_ids = set(progress.unlocked_problems.values_list("id", flat=True)) if progress else set()
+    unlocked_ids = (
+        set(progress.unlocked_problems.values_list("id", flat=True))
+        if progress
+        else set()
+    )
 
     solved_ids = set(
-        Submission.objects.filter(
-            team=team, status=Submission.ACCEPTED
-        ).values_list("problem_id", flat=True)
+        Submission.objects.filter(team=team, status=Submission.ACCEPTED).values_list(
+            "problem_id", flat=True
+        )
     )
 
     groups = OrderedDict()

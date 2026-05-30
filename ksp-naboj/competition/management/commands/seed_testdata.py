@@ -89,4 +89,6 @@ class Command(BaseCommand):
         )
         self.stdout.write("Marked Faktorial easy as accepted")
 
-        self.stdout.write(self.style.SUCCESS(f"\nDone! Visit: /competition/2026/?team_id={team.id}"))
+        self.stdout.write(
+            self.style.SUCCESS(f"\nDone! Visit: /competition/2026/?team_id={team.id}")
+        )

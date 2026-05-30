@@ -71,22 +71,22 @@ This creates:
 
 ---
 
-## Part 1: Foundation - Views, URLs, and Base Template
+## Part 1: Foundation - Views, URLs, and Base Template ✅
 
 **Goal**: Get a working Django view serving the competition page with the correct layout grid.
 
 ### Tasks
 
-- [ ] **1.1 Add django-htmx middleware** to `settings.py` MIDDLEWARE
-- [ ] **1.2 Create `CompetitionDetailView`** in `ksp-naboj/competition/views.py`
+- [x] **1.1 Add django-htmx middleware** to `settings.py` MIDDLEWARE
+- [x] **1.2 Create `CompetitionDetailView`** in `ksp-naboj/competition/views.py`
   - Takes competition `year` from URL
   - Gets the team for the current user (via `Team.members` or a new FK)
   - Passes competition, team, team progress (unlocked problems) to template
   - Note: Auth is not wired yet, so for now accept a `team_id` query param for development
-- [ ] **1.3 Wire up URLs**
+- [x] **1.3 Wire up URLs**
   - `ksp-naboj/competition/urls.py`: `path("<int:year>/", CompetitionDetailView.as_view(), name="competition-detail")`
   - Include competition URLs in `ksp-naboj/urls.py`
-- [ ] **1.4 Create base competition template** `ksp-naboj/competition/templates/competition/competition.html`
+- [x] **1.4 Create base competition template** `ksp-naboj/competition/templates/competition/competition.html`
   - Extends `base.html`, overrides `outer_container` block
   - Full-width grid: `grid grid-cols-12 gap-0 h-[calc(100vh-4rem)]`
   - Three placeholder columns (2+3+7) with borders/dividers
@@ -101,18 +101,18 @@ This creates:
 
 ---
 
-## Part 2: Problem List Sidebar (2 cols)
+## Part 2: Problem List Sidebar (2 cols) ✅
 
 **Goal**: Render the problem list with grouped easy/hard sub-rows, visual status indicators.
 
 ### Tasks
 
-- [ ] **2.1 Add a service method** to get unlocked problems grouped by unlock_order
+- [x] **2.1 Add a service method** to get unlocked problems grouped by unlock_order
   - In `ksp-naboj/competition/services.py` (new file) or `problem/services.py`
   - Returns problems ordered by `unlock_order`, grouped into `[(title, [easy_problem, hard_problem]), ...]`
   - Mark which are unlocked vs locked (grayed out) based on `TeamProgress.unlocked_problems`
   - Mark which are solved (have an `accepted` submission from the team)
-- [ ] **2.2 Create problem list template partial** `competition/partials/_problem_list.html`
+- [x] **2.2 Create problem list template partial** `competition/partials/_problem_list.html`
   - Each group: header row with title and unlock order number
   - Two sub-rows: "Easy" and "Hard" with difficulty badge
   - Visual states:
@@ -120,7 +120,7 @@ This creates:
     - **Unlocked + solved**: green checkmark badge
     - **Locked**: grayed out, lock icon, not clickable
   - Currently selected problem highlighted with `bg-primary/10` or similar
-- [ ] **2.3 Add Stimulus controller** `problem-list_controller.js`
+- [x] **2.3 Add Stimulus controller** `problem-list_controller.js`
   - Tracks currently selected problem ID
   - On click: updates selection state, dispatches event for other panels to react
   - For now: just adds/removes active class on click (no server round-trip)
@@ -163,28 +163,28 @@ This creates:
 
 ---
 
-## Part 4: Monaco Editor Integration (7 cols)
+## Part 4: Monaco Editor Integration (7 cols) ✅
 
 **Goal**: Embed Monaco Editor in the right panel, wired to the selected problem.
 
 ### Tasks
 
-- [ ] **4.1 Install Monaco Editor**: `pnpm add monaco-editor`
-- [ ] **4.2 Create Stimulus controller** `monaco-editor_controller.js`
+- [x] **4.1 Install Monaco Editor**: `pnpm add monaco-editor`
+- [x] **4.2 Create Stimulus controller** `monaco-editor_controller.js`
   - Creates Monaco editor instance on `connect()`
   - Configurable via values: `language` (default: `python`), `theme` (default: `vs-dark`)
   - Provides methods: `getCode()`, `setCode()`, `setLanguage()`
   - Handles resize when panel dimensions change (via `ResizeObserver`)
   - **Important**: Monaco's web workers need special handling with esbuild. Use `esbuild-plugin-monaco-editor` or configure workers manually via `self.MonacoEnvironment`
-- [ ] **4.3 Update esbuild config** `ksp-naboj/styles/src/build.mjs`
+- [x] **4.3 Update esbuild config** `ksp-naboj/styles/src/build.mjs`
   - Add Monaco editor plugin or configure worker bundling
   - Monaco workers needed: `editorWorker`, `typescript`, `json` (as needed)
-- [ ] **4.4 Create editor panel partial** `competition/partials/_editor_panel.html`
+- [x] **4.4 Create editor panel partial** `competition/partials/_editor_panel.html`
   - Full-height container for Monaco
   - Language selector dropdown above the editor
   - Submit button below the editor
   - Uses the `monaco-editor` Stimulus controller
-- [ ] **4.5 Wire problem selection to editor**
+- [x] **4.5 Wire problem selection to editor**
   - When problem changes: update language restriction if any, optionally reset editor content
   - Store per-problem code in memory (JS Map) so switching problems preserves work
 
@@ -197,24 +197,24 @@ This creates:
 
 ---
 
-## Part 5: Submission Flow (Mock)
+## Part 5: Submission Flow (Mock) ✅
 
 **Goal**: Allow submitting code from the editor and displaying results.
 
 ### Tasks
 
-- [ ] **5.1 Create submission view** in `ksp-naboj/submission/views.py`
+- [x] **5.1 Create submission view** in `ksp-naboj/submission/views.py`
   - `POST /competition/<year>/submit/` with `problem_id`, `code`, `language`
   - Creates a `Submission` object with status `pending`
   - For now: mock the result (randomly accept/reject after a short delay) OR just create as `pending`
   - Returns submission result as JSON (for htmx/fetch consumption)
-- [ ] **5.2 Wire submission URLs** in `ksp-naboj/submission/urls.py`
-- [ ] **5.3 Create submission Stimulus controller** `submission_controller.js`
+- [x] **5.2 Wire submission URLs** — wired via `ksp-naboj/competition/urls.py` (not submission/urls.py)
+- [x] **5.3 Create submission Stimulus controller** `submission_controller.js`
   - Handles submit button click
   - POSTs code + language + problem_id to submission endpoint
   - Shows loading state on submit button
   - Displays result (accepted/rejected/error) in a toast or inline message
-- [ ] **5.4 Add submission feedback UI** to editor panel
+- [x] **5.4 Add submission feedback UI** to editor panel
   - Toast/notification for submission result
   - Recent submissions list below editor or in a collapsible panel
   - Status badges: green for accepted, red for rejected, yellow for pending
@@ -234,7 +234,7 @@ This creates:
 
 ### Tasks
 
-- [ ] **6.1 Add competition timing fields** to `Competition` model (or a new `CompetitionRound` model)
+- [x] **6.1 Add competition timing fields** to `Competition` model (or a new `CompetitionRound` model)
   - `start_at` (DateTimeField)
   - `end_at` (DateTimeField, computed as `start_at + 2 hours`)
   - Migration

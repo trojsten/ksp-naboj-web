@@ -5,18 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('ksp_naboj_submission', '0001_initial'),
-        ('ksp_naboj_team', '0001_initial'),
+        ("ksp_naboj_submission", "0001_initial"),
+        ("ksp_naboj_team", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='submission',
-            name='team',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ksp_naboj_team.team'),
+            model_name="submission",
+            name="team",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="ksp_naboj_team.team"
+            ),
         ),
     ]

@@ -31,6 +31,7 @@ select = [
   "LOG", # logging
   "PTH", # use pathlib
 ]
+ignore = ["N999"] # ksp-naboj module name with hyphen is intentional
 
 [tool.bumpver]
 current_version = "2000.1"

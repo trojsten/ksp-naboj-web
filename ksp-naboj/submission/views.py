@@ -52,7 +52,7 @@ def submit_code(request):
         Submission.COMPILATION_ERROR,
         Submission.TIME_LIMIT_EXCEEDED,
     ]
-    weights = [0.8, 0.1/2, 0.1/2, 0.1/2, 0.1/2]
+    weights = [0.8, 0.1 / 2, 0.1 / 2, 0.1 / 2, 0.1 / 2]
     result_status = random.choices(mock_statuses, weights=weights, k=1)[0]
 
     submission.status = result_status

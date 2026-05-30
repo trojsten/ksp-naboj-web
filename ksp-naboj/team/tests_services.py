@@ -1,61 +1,63 @@
-from django.test import TestCase
-from django.utils import timezone
 import importlib
 
-Competition = importlib.import_module('ksp-naboj.competition.models').Competition
-Team = importlib.import_module('ksp-naboj.team.models').Team
-TeamProgress = importlib.import_module('ksp-naboj.team.models').TeamProgress
-Problem = importlib.import_module('ksp-naboj.problem.models').Problem
-Submission = importlib.import_module('ksp-naboj.submission.models').Submission
-handle_successful_submission = importlib.import_module('ksp-naboj.team.services').handle_successful_submission
+from django.test import TestCase
+from django.utils import timezone
+
+Competition = importlib.import_module("ksp-naboj.competition.models").Competition
+Team = importlib.import_module("ksp-naboj.team.models").Team
+TeamProgress = importlib.import_module("ksp-naboj.team.models").TeamProgress
+Problem = importlib.import_module("ksp-naboj.problem.models").Problem
+Submission = importlib.import_module("ksp-naboj.submission.models").Submission
+handle_successful_submission = importlib.import_module(
+    "ksp-naboj.team.services"
+).handle_successful_submission
 
 
 class ProgressiveUnlockTest(TestCase):
     def setUp(self):
         self.competition = Competition.objects.create(
-            year=2026,
-            judge_namespace='naboj-2026'
+            year=2026, judge_namespace="naboj-2026"
         )
         self.team = Team.objects.create(
-            name='Test Team',
-            school='Test School',
-            category='junior',
-            members='Alice,Bob,Charlie,David',
-            competition=self.competition
+            name="Test Team",
+            school="Test School",
+            category="junior",
+            members="Alice,Bob,Charlie,David",
+            competition=self.competition,
         )
         self.team_progress = self.team.teamprogress
 
         self.problem1_easy = Problem.objects.create(
             competition=self.competition,
-            title='Two Sums',
-            description='First problem',
-            difficulty='easy',
+            title="Two Sums",
+            description="First problem",
+            difficulty="easy",
             unlock_order=1,
-            judge_task='two-sums_a'
+            judge_task="two-sums_a",
         )
         self.problem1_hard = Problem.objects.create(
             competition=self.competition,
-            title='Two Sums',
-            description='First problem hard',
-            difficulty='hard',
+            title="Two Sums",
+            description="First problem hard",
+            difficulty="hard",
             unlock_order=1,
-            judge_task='two-sums_b'
+            judge_task="two-sums_b",
         )
         self.problem2_easy = Problem.objects.create(
             competition=self.competition,
-            title='Three Sums',
-            description='Second problem',
-            difficulty='easy',
+            title="Three Sums",
+            description="Second problem",
+            difficulty="easy",
             unlock_order=2,
-            judge_task='three-sums_a'
+            judge_task="three-sums_a",
         )
         self.problem2_hard = Problem.objects.create(
             competition=self.competition,
-            title='Three Sums',
-            description='Second problem hard',
-            difficulty='hard',
+            title="Three Sums",
+            description="Second problem hard",
+            difficulty="hard",
             unlock_order=2,
-            judge_task='three-sums_b'
+            judge_task="three-sums_b",
         )
 
     def test_initial_unlocked_problems(self):
@@ -70,10 +72,10 @@ class ProgressiveUnlockTest(TestCase):
         submission = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='solution',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission)
 
@@ -95,10 +97,10 @@ class ProgressiveUnlockTest(TestCase):
         submission = Submission.objects.create(
             team=self.team,
             problem=self.problem2_easy,
-            code='solution',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission)
 
@@ -114,10 +116,10 @@ class ProgressiveUnlockTest(TestCase):
         hard_submission = Submission.objects.create(
             team=self.team,
             problem=self.problem1_hard,
-            code='hard solution',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="hard solution",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(hard_submission)
 
@@ -129,10 +131,10 @@ class ProgressiveUnlockTest(TestCase):
         rejected_submission = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='wrong solution',
-            language='python',
-            status='rejected',
-            judged_at=timezone.now()
+            code="wrong solution",
+            language="python",
+            status="rejected",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(rejected_submission)
 
@@ -144,9 +146,9 @@ class ProgressiveUnlockTest(TestCase):
         pending_submission = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='solution',
-            language='python',
-            status='pending'
+            code="solution",
+            language="python",
+            status="pending",
         )
         handle_successful_submission(pending_submission)
 
@@ -158,10 +160,10 @@ class ProgressiveUnlockTest(TestCase):
         submission1 = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='solution1',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution1",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission1)
 
@@ -172,10 +174,10 @@ class ProgressiveUnlockTest(TestCase):
         submission2 = Submission.objects.create(
             team=self.team,
             problem=self.problem2_easy,
-            code='solution2',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution2",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission2)
 
@@ -190,20 +192,20 @@ class ProgressiveUnlockTest(TestCase):
     def test_no_next_easy_problem(self):
         Problem.objects.create(
             competition=self.competition,
-            title='Last Problem',
-            description='Last easy problem',
-            difficulty='easy',
+            title="Last Problem",
+            description="Last easy problem",
+            difficulty="easy",
             unlock_order=10,
-            judge_task='last_problem_a'
+            judge_task="last_problem_a",
         )
 
         submission = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='solution',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission)
 
@@ -222,10 +224,10 @@ class ProgressiveUnlockTest(TestCase):
         submission = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='solution',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission)
 
@@ -244,10 +246,10 @@ class ProgressiveUnlockTest(TestCase):
         submission = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='solution',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission)
 
@@ -256,21 +258,21 @@ class ProgressiveUnlockTest(TestCase):
 
     def test_unlock_different_teams(self):
         team2 = Team.objects.create(
-            name='Test Team 2',
-            school='Test School 2',
-            category='senior',
-            members='Eve,Frank,Grace,Heidi',
-            competition=self.competition
+            name="Test Team 2",
+            school="Test School 2",
+            category="senior",
+            members="Eve,Frank,Grace,Heidi",
+            competition=self.competition,
         )
         team2_progress = team2.teamprogress
 
         submission1 = Submission.objects.create(
             team=self.team,
             problem=self.problem1_easy,
-            code='solution1',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution1",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission1)
 
@@ -288,20 +290,20 @@ class ProgressiveUnlockTest(TestCase):
 
         problem3_easy = Problem.objects.create(
             competition=self.competition,
-            title='Four Sums',
-            description='Third problem',
-            difficulty='easy',
+            title="Four Sums",
+            description="Third problem",
+            difficulty="easy",
             unlock_order=3,
-            judge_task='four-sums_a'
+            judge_task="four-sums_a",
         )
 
         submission = Submission.objects.create(
             team=self.team,
             problem=self.problem2_easy,
-            code='solution',
-            language='python',
-            status='accepted',
-            judged_at=timezone.now()
+            code="solution",
+            language="python",
+            status="accepted",
+            judged_at=timezone.now(),
         )
         handle_successful_submission(submission)
 

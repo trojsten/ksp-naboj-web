@@ -1,10 +1,10 @@
 import importlib
 
-Problem = importlib.import_module('ksp-naboj.problem.models').Problem
+Problem = importlib.import_module("ksp-naboj.problem.models").Problem
 
 
 def handle_successful_submission(submission):
-    if submission.problem.difficulty == 'easy' and submission.status == 'accepted':
+    if submission.problem.difficulty == "easy" and submission.status == "accepted":
         progress = submission.team.teamprogress
 
         competition = submission.problem.competition
@@ -14,8 +14,8 @@ def handle_successful_submission(submission):
         hard_problem = Problem.objects.filter(
             competition=competition,
             title=title,
-            difficulty='hard',
-            unlock_order=unlock_order
+            difficulty="hard",
+            unlock_order=unlock_order,
         ).first()
 
         if hard_problem and hard_problem not in progress.unlocked_problems.all():
@@ -23,8 +23,8 @@ def handle_successful_submission(submission):
 
         next_easy = Problem.objects.filter(
             competition=competition,
-            difficulty='easy',
-            unlock_order=progress.highest_unlocked_order + 1
+            difficulty="easy",
+            unlock_order=progress.highest_unlocked_order + 1,
         ).first()
 
         if next_easy:

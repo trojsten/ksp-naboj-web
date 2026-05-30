@@ -5,35 +5,73 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('ksp_naboj_competition', '0001_initial'),
-        ('ksp_naboj_problem', '0001_initial'),
+        ("ksp_naboj_competition", "0001_initial"),
+        ("ksp_naboj_problem", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Team',
+            name="Team",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
-                ('school', models.CharField(max_length=255)),
-                ('category', models.CharField(choices=[('junior', 'Junior'), ('senior', 'Senior')], max_length=10)),
-                ('members', models.CharField(max_length=500)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('competition', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ksp_naboj_competition.competition')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
+                ("school", models.CharField(max_length=255)),
+                (
+                    "category",
+                    models.CharField(
+                        choices=[("junior", "Junior"), ("senior", "Senior")],
+                        max_length=10,
+                    ),
+                ),
+                ("members", models.CharField(max_length=500)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "competition",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ksp_naboj_competition.competition",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TeamProgress',
+            name="TeamProgress",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('last_unlock_at', models.DateTimeField(blank=True, null=True)),
-                ('score', models.IntegerField(default=0)),
-                ('team', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='ksp_naboj_team.team')),
-                ('unlocked_problems', models.ManyToManyField(related_name='unlocked_by', to='ksp_naboj_problem.problem')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("last_unlock_at", models.DateTimeField(blank=True, null=True)),
+                ("score", models.IntegerField(default=0)),
+                (
+                    "team",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ksp_naboj_team.team",
+                    ),
+                ),
+                (
+                    "unlocked_problems",
+                    models.ManyToManyField(
+                        related_name="unlocked_by", to="ksp_naboj_problem.problem"
+                    ),
+                ),
             ],
         ),
     ]

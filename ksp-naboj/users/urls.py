@@ -1,4 +1,3 @@
-
 from django.urls.conf import include, path
 
 urlpatterns = [

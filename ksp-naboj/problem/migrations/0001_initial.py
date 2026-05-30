@@ -5,29 +5,47 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('ksp_naboj_competition', '0001_initial'),
+        ("ksp_naboj_competition", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Problem',
+            name="Problem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('difficulty', models.CharField(choices=[('easy', 'Easy'), ('hard', 'Hard')], max_length=10)),
-                ('unlock_order', models.PositiveIntegerField()),
-                ('judge_task', models.CharField(max_length=100, unique=True)),
-                ('language', models.CharField(blank=True, max_length=50, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('competition', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ksp_naboj_competition.competition')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                (
+                    "difficulty",
+                    models.CharField(
+                        choices=[("easy", "Easy"), ("hard", "Hard")], max_length=10
+                    ),
+                ),
+                ("unlock_order", models.PositiveIntegerField()),
+                ("judge_task", models.CharField(max_length=100, unique=True)),
+                ("language", models.CharField(blank=True, max_length=50, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "competition",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ksp_naboj_competition.competition",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('competition', 'title', 'difficulty')},
+                "unique_together": {("competition", "title", "difficulty")},
             },
         ),
     ]

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ksp_naboj_team', '0001_initial'),
+        ("ksp_naboj_team", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='teamprogress',
-            name='highest_unlocked_order',
+            model_name="teamprogress",
+            name="highest_unlocked_order",
             field=models.PositiveIntegerField(default=0),
         ),
     ]

@@ -7,4 +7,4 @@ class TeamConfig(AppConfig):
     label = "ksp_naboj_team"
 
     def ready(self):
-        from . import signals
+        pass

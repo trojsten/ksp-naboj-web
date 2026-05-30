@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ksp_naboj_competition', '0001_initial'),
+        ("ksp_naboj_competition", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='competition',
-            name='end_at',
+            model_name="competition",
+            name="end_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='competition',
-            name='start_at',
+            model_name="competition",
+            name="start_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

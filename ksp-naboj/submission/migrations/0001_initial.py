@@ -5,26 +5,54 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('ksp_naboj_problem', '0001_initial'),
+        ("ksp_naboj_problem", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Submission',
+            name="Submission",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.TextField()),
-                ('language', models.CharField(max_length=50)),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected'), ('runtime_error', 'Runtime Error'), ('compilation_error', 'Compilation Error'), ('time_limit_exceeded', 'Time Limit Exceeded'), ('memory_limit_exceeded', 'Memory Limit Exceeded')], default='pending', max_length=25)),
-                ('execution_time', models.FloatField(blank=True, null=True)),
-                ('submitted_at', models.DateTimeField(auto_now_add=True)),
-                ('judged_at', models.DateTimeField(blank=True, null=True)),
-                ('error_message', models.TextField(blank=True)),
-                ('problem', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ksp_naboj_problem.problem')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("code", models.TextField()),
+                ("language", models.CharField(max_length=50)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("accepted", "Accepted"),
+                            ("rejected", "Rejected"),
+                            ("runtime_error", "Runtime Error"),
+                            ("compilation_error", "Compilation Error"),
+                            ("time_limit_exceeded", "Time Limit Exceeded"),
+                            ("memory_limit_exceeded", "Memory Limit Exceeded"),
+                        ],
+                        default="pending",
+                        max_length=25,
+                    ),
+                ),
+                ("execution_time", models.FloatField(blank=True, null=True)),
+                ("submitted_at", models.DateTimeField(auto_now_add=True)),
+                ("judged_at", models.DateTimeField(blank=True, null=True)),
+                ("error_message", models.TextField(blank=True)),
+                (
+                    "problem",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ksp_naboj_problem.problem",
+                    ),
+                ),
             ],
         ),
     ]
