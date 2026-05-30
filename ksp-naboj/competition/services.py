@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 Problem = importlib.import_module("ksp-naboj.problem.models").Problem
 Submission = importlib.import_module("ksp-naboj.submission.models").Submission
+TeamProgress = importlib.import_module("ksp-naboj.team.models").TeamProgress
 
 # Short labels for submission statuses shown in the problem list
 STATUS_LABELS = {
@@ -17,7 +18,8 @@ STATUS_LABELS = {
 
 
 def get_problem_groups(competition, team, activities=None):
-    progress = team.teamprogress if hasattr(team, "teamprogress") else None
+    # Always fetch fresh from DB to avoid stale cached relations (critical for SSE)
+    progress = TeamProgress.objects.filter(team=team).first()
     max_order = progress.highest_unlocked_order if progress else 0
 
     problems = list(
@@ -89,7 +91,8 @@ def get_problem_groups(competition, team, activities=None):
 
 
 def get_unlocked_problems_json(competition, team):
-    progress = team.teamprogress if hasattr(team, "teamprogress") else None
+    # Always fetch fresh from DB to avoid stale cached relations (critical for SSE)
+    progress = TeamProgress.objects.filter(team=team).first()
     if not progress:
         return {}
 
