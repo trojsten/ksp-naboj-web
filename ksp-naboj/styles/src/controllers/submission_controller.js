@@ -4,6 +4,7 @@ export default class extends Controller {
     static targets = ["button", "feedback", "result"]
 
     feedbackTimeout = null
+    pollTimer = null
 
     connect() {
         this._boundOnSelect = this.onSelect.bind(this)
@@ -13,6 +14,7 @@ export default class extends Controller {
     disconnect() {
         window.removeEventListener("problem:select", this._boundOnSelect)
         if (this.feedbackTimeout) clearTimeout(this.feedbackTimeout)
+        if (this.pollTimer) clearTimeout(this.pollTimer)
     }
 
     onSelect(event) {
@@ -64,28 +66,79 @@ export default class extends Controller {
             const result = await response.json()
 
             if (response.ok) {
-                if (result.status === "accepted") {
+                if (result.status === "pending" && result.judge_public_id) {
                     this.showFeedback(
-                        "success",
-                        `Accepted! (${result.execution_time}s)`
+                        "info",
+                        "Submitted — waiting for result..."
                     )
-                } else {
-                    this.showFeedback(
-                        "error",
-                        `${this._statusLabel(result.status)}: ${result.error_message}`
-                    )
+                    this.buttonTarget.textContent = "Judging..."
+                    this._pollStatus(result.judge_public_id)
+                    return
                 }
+                this._showResult(result)
             } else {
                 this.showFeedback(
                     "error",
-                    result.error || "Submission failed"
+                    result.error_message || result.error || "Submission failed"
                 )
             }
         } catch {
             this.showFeedback("error", "Network error. Please try again.")
         } finally {
-            this.buttonTarget.disabled = false
-            this.buttonTarget.textContent = "Submit"
+            if (!this.pollTimer) {
+                this.buttonTarget.disabled = false
+                this.buttonTarget.textContent = "Submit"
+            }
+        }
+    }
+
+    _pollStatus(publicId, attempt = 0) {
+        const maxAttempts = 90 // ~3 min at 2s intervals
+        this.pollTimer = setTimeout(async () => {
+            try {
+                const response = await fetch(
+                    `/competition/status/${publicId}/`,
+                    { headers: { "X-CSRFToken": document.querySelector('meta[name="csrf-token"]')?.content || "" } }
+                )
+                const result = await response.json()
+                if (response.ok && result.status && result.status !== "pending") {
+                    this.pollTimer = null
+                    this._showResult(result)
+                    this.buttonTarget.disabled = false
+                    this.buttonTarget.textContent = "Submit"
+                    return
+                }
+            } catch {
+                // network hiccup — keep polling
+            }
+            if (attempt + 1 < maxAttempts) {
+                this._pollStatus(publicId, attempt + 1)
+            } else {
+                this.pollTimer = null
+                this.showFeedback(
+                    "warning",
+                    "Taking longer than expected. Your submission will update soon."
+                )
+                this.buttonTarget.disabled = false
+                this.buttonTarget.textContent = "Submit"
+            }
+        }, 2000)
+    }
+
+    _showResult(result) {
+        if (result.status === "accepted") {
+            this.showFeedback(
+                "success",
+                result.execution_time != null
+                    ? `Accepted! (${result.execution_time}s)`
+                    : "Accepted!"
+            )
+        } else {
+            const label = this._statusLabel(result.status)
+            const message = result.error_message
+                ? `${label}: ${result.error_message}`
+                : label
+            this.showFeedback("error", message)
         }
     }
 
@@ -96,6 +149,7 @@ export default class extends Controller {
             success: "bg-success/10 text-success border-success/30",
             error: "bg-error/10 text-error border-error/30",
             warning: "bg-warning/10 text-warning border-warning/30",
+            info: "bg-info/10 text-info border-info/30",
         }
 
         this.feedbackTarget.className = `px-3 py-2 rounded text-sm border ${colors[type] || colors.error}`

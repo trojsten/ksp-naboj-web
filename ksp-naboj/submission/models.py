@@ -29,6 +29,10 @@ class Submission(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
     judged_at = models.DateTimeField(null=True, blank=True)
     error_message = models.TextField(blank=True)
+    judge_public_id = models.CharField(
+        max_length=100, blank=True, default="", db_index=True
+    )
+    protocol_key = models.CharField(max_length=100, blank=True, default="")
 
     def __str__(self):
         return f"{self.team.name} - {self.problem.title} ({self.status})"

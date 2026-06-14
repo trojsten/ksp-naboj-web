@@ -10,9 +10,15 @@ class SubmissionAdmin(admin.ModelAdmin):
         "problem",
         "language",
         "status",
+        "judge_public_id",
         "submitted_at",
         "judged_at",
     )
     list_filter = ("status", "language", "submitted_at")
-    search_fields = ("team__name", "problem__title", "language")
-    readonly_fields = ("submitted_at",)
+    search_fields = (
+        "team__name",
+        "problem__title",
+        "language",
+        "judge_public_id",
+    )
+    readonly_fields = ("submitted_at", "judge_public_id", "protocol_key")

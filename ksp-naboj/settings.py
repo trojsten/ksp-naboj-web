@@ -142,6 +142,11 @@ DJANGO_TABLES2_TABLE_ATTRS = {
     "class": "simple-table",
 }
 
+JUDGE_TOKEN = env("JUDGE_SECRET", default="")
+JUDGE_URL = env("JUDGE_URL", default="https://judge.ksp.sk")
+JUDGE_NAMESPACE = env("JUDGE_NAMESPACE", default="")
+USE_MOCK_JUDGE = env.bool("USE_MOCK_JUDGE", default=not JUDGE_TOKEN)
+
 # dsn = env("SENTRY_DSN", default="")
 # if dsn:
 #     import sentry_sdk

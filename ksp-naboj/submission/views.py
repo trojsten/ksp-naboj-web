@@ -1,11 +1,18 @@
 import importlib
 import json
+import logging
 import random
 
+from django.conf import settings
 from django.db import transaction
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+from judge_client.exceptions import (
+    JudgeConnectionError,
+    TaskNotFoundError,
+    UnknownLanguageError,
+)
 
 Problem = importlib.import_module("ksp-naboj.problem.models").Problem
 Submission = importlib.import_module("ksp-naboj.submission.models").Submission
@@ -16,6 +23,14 @@ get_team_from_session = importlib.import_module(
 handle_successful_submission = importlib.import_module(
     "ksp-naboj.team.services"
 ).handle_successful_submission
+submit_to_judge = importlib.import_module(
+    "ksp-naboj.submission.services"
+).submit_to_judge
+refresh_from_judge = importlib.import_module(
+    "ksp-naboj.submission.services"
+).refresh_from_judge
+
+logger = logging.getLogger("ksp-naboj")
 
 
 @require_http_methods(["POST"])
@@ -68,7 +83,103 @@ def submit_code(request):
         status=Submission.PENDING,
     )
 
-    # Mock judging (replace with real judge-client later)
+    if settings.USE_MOCK_JUDGE:
+        result_status, execution_time, error_message = _mock_judge()
+        submission.status = result_status
+        submission.execution_time = execution_time
+        submission.judged_at = timezone.now()
+        submission.error_message = error_message
+        submission.save()
+
+        if submission.status == Submission.ACCEPTED:
+            with transaction.atomic():
+                handle_successful_submission(submission)
+    else:
+        try:
+            submit_to_judge(submission, ip=request.META.get("REMOTE_ADDR"))
+        except Exception as exc:
+            http_status, message = _classify_judge_error(exc, problem)
+            logger.warning(
+                "Judge submit failed for problem pk=%s (judge_task=%r, "
+                "namespace=%r): %r",
+                problem.pk,
+                problem.judge_task,
+                settings.JUDGE_NAMESPACE or problem.competition.judge_namespace,
+                exc,
+                exc_info=True,
+            )
+            submission.status = Submission.REJECTED
+            submission.error_message = message
+            submission.judged_at = timezone.now()
+            submission.save()
+            return JsonResponse(
+                {
+                    "submission_id": submission.id,
+                    "status": submission.status,
+                    "error_message": submission.error_message,
+                    "problem_title": problem.title,
+                    "problem_difficulty": problem.difficulty,
+                },
+                status=http_status,
+            )
+
+    return JsonResponse(
+        {
+            "submission_id": submission.id,
+            "judge_public_id": submission.judge_public_id,
+            "status": submission.status,
+            "execution_time": submission.execution_time,
+            "error_message": submission.error_message,
+            "problem_title": problem.title,
+            "problem_difficulty": problem.difficulty,
+        }
+    )
+
+
+@require_http_methods(["GET"])
+def submission_status(request, judge_public_id):
+    team = get_team_from_session(request)
+    if not team:
+        return JsonResponse({"error": "Not logged in"}, status=403)
+
+    try:
+        submission = Submission.objects.get(judge_public_id=judge_public_id, team=team)
+    except Submission.DoesNotExist:
+        return JsonResponse({"error": "Submission not found"}, status=404)
+
+    if not settings.USE_MOCK_JUDGE and submission.status == Submission.PENDING:
+        try:
+            refresh_from_judge(submission)
+        except Exception as exc:
+            logger.warning(
+                "Failed to refresh submission pk=%s from judge: %r",
+                submission.pk,
+                exc,
+                exc_info=True,
+            )
+        submission.refresh_from_db()
+
+    return JsonResponse(
+        {
+            "submission_id": submission.id,
+            "status": submission.status,
+            "execution_time": submission.execution_time,
+            "error_message": submission.error_message,
+        }
+    )
+
+
+def _classify_judge_error(exc, problem):
+    if isinstance(exc, TaskNotFoundError):
+        return 422, f"Judge task not found: '{problem.judge_task}'."
+    if isinstance(exc, UnknownLanguageError):
+        return 422, "Could not detect the programming language for this submission."
+    if isinstance(exc, JudgeConnectionError):
+        return 502, f"Judge is unavailable: {exc}"
+    return 502, f"Failed to submit to judge: {exc}"
+
+
+def _mock_judge():
     mock_statuses = [
         Submission.ACCEPTED,
         Submission.REJECTED,
@@ -79,33 +190,17 @@ def submit_code(request):
     weights = [0.8, 0.05, 0.05, 0.05, 0.05]
     result_status = random.choices(mock_statuses, weights=weights, k=1)[0]
 
-    submission.status = result_status
-    submission.execution_time = round(random.uniform(0.01, 2.0), 3)
-    submission.judged_at = timezone.now()
+    execution_time = round(random.uniform(0.01, 2.0), 3)
 
+    error_messages = {
+        Submission.REJECTED: "Wrong answer on test case 3",
+        Submission.RUNTIME_ERROR: "RuntimeError: division by zero",
+        Submission.COMPILATION_ERROR: "SyntaxError: invalid syntax",
+        Submission.TIME_LIMIT_EXCEEDED: "Time limit exceeded on test case 5",
+    }
     if result_status != Submission.ACCEPTED:
-        error_messages = {
-            Submission.REJECTED: "Wrong answer on test case 3",
-            Submission.RUNTIME_ERROR: "RuntimeError: division by zero",
-            Submission.COMPILATION_ERROR: "SyntaxError: invalid syntax",
-            Submission.TIME_LIMIT_EXCEEDED: "Time limit exceeded on test case 5",
-        }
-        submission.error_message = error_messages.get(result_status, "Unknown error")
+        error_message = error_messages.get(result_status, "")
+    else:
+        error_message = ""
 
-    submission.save()
-
-    # Handle accepted: unlock new problems (with locking)
-    if submission.status == Submission.ACCEPTED:
-        with transaction.atomic():
-            handle_successful_submission(submission)
-
-    return JsonResponse(
-        {
-            "submission_id": submission.id,
-            "status": submission.status,
-            "execution_time": submission.execution_time,
-            "error_message": submission.error_message,
-            "problem_title": problem.title,
-            "problem_difficulty": problem.difficulty,
-        }
-    )
+    return result_status, execution_time, error_message
